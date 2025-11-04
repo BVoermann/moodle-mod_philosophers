@@ -204,9 +204,27 @@ class questionbank extends external_api {
         $ctx = $coursemodule->context;
 
         // load categories
+        global $DB;
         $question_contexts = new question_edit_contexts($ctx);
-        $usable_question_contexts = $question_contexts->having_cap('moodle/question:useall');
-        $question_categories = question_category_options($usable_question_contexts);
+        $usable_contexts = $question_contexts->having_cap('moodle/question:useall');
+
+        //Get all question categories from usable contexts
+        $question_categories = [];
+        foreach ($usable_contexts as $context) {
+            $context_name = $context->get_context_name();
+            $categories = $DB->get_records('question_categories', ['contextid' => $context->id], 'sortorder ASC');
+
+            if ($categories) {
+                $question_categories[$context_name] = [];
+                foreach ($categories as $category) {
+                    // Build the key in the format "categoryid,contextid" to match the old format
+                    $key = $category->id . ',' . $category->contextid;
+                    // Add appropriate indentation to show category hierarchy
+                    $indent = str_repeat('&nbsp;&nbsp;&nbsp;', $category->depth ?? 0);
+                    $question_categories[$context_name][$key] = $indent . $category->name;
+                }
+            }
+        }
         /**
          * structure of categories result:
          * two-dimensional array with
