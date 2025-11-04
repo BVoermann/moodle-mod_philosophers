@@ -31,10 +31,9 @@ use mod_philosophers\external\exporter\mdl_category_dto;
 use mod_philosophers\external\exporter\mdl_question_dto;
 use mod_philosophers\util;
 use moodle_exception;
-use question_edit_contexts;
+use core_question\local\bank\question_edit_contexts;
 use restricted_context_exception;
 use stdClass;
-use function question_category_options;
 
 defined('MOODLE_INTERNAL') || die();
 
